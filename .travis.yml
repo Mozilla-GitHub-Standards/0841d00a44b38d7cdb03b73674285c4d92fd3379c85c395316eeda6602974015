@@ -1,0 +1,15 @@
+language: generic
+sudo: required
+services:
+  - docker
+
+script:
+  - docker build -t app:latest .
+  - |
+    docker run --rm app:latest \
+    bash -c 'cd /root/lua_sandbox_extensions/release && ctest -V -C integration'
+  - mkdir dist
+  - |
+    docker run -v `pwd`/dist:/dist --rm app:latest \
+    bash -c 'cp /root/dist/*.rpm /dist'
+  - sha256sum dist/*
